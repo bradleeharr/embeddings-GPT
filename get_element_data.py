@@ -45,6 +45,7 @@ def verify_authentication(homeserver_url, access_token, username):
         print("Authentication verification failed!")
         exit()
 
+
 def fetch_messages(homeserver_url, access_token, room_id):
     """Fetch messages from the Matrix room."""
     since_token = None
