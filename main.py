@@ -2,15 +2,19 @@ from data_to_csv import *
 import tiktoken
 import matplotlib.pyplot as plt
 import openai
+from get_element_data import load_config
+
+config=load_config("credentials.json")
+openai.api_key = config["openai-api-key"]
 
 element_data_fp = "element_data"
 github_data_fp = "github_data"
 
 max_tokens = 500
 
-# Function to split the text into chunks of a maximum number of tokens
-def split_into_many(text, tokenizer, max_tokens = max_tokens):
 
+# Function to split the text into chunks of a maximum number of tokens
+def split_into_many(text, tokenizer, max_tokens=max_tokens):
     # Split the text into sentences
     sentences = text.split('. ')
 
@@ -43,6 +47,7 @@ def split_into_many(text, tokenizer, max_tokens = max_tokens):
 
     return chunks
 
+
 def main():
     if not os.path.exists(element_data_fp):
         os.makedirs(element_data_fp)
@@ -64,7 +69,7 @@ def main():
     df['n_tokens'] = df.text.apply(lambda x: len(tokenizer.encode(x)))
 
     # Visualize the distribution of the number of tokens per row using a histogram
-    df.n_tokens.hist()
+    #df.n_tokens.hist()
     plt.show()
 
     shortened = []
@@ -86,10 +91,12 @@ def main():
 
     df = pd.DataFrame(shortened, columns=['text'])
     df['n_tokens'] = df.text.apply(lambda x: len(tokenizer.encode(x)))
-    df.n_tokens.hist()
+    #df.n_tokens.hist()
     plt.show()
 
-    df['embeddings'] = df.text.apply(lambda x: openai.Embedding.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
+    print("Generating Embeddings")
+    df['embeddings'] = df.text.apply(
+        lambda x: openai.Embedding.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
 
     df.to_csv('processed/embeddings.csv')
     df.head()
