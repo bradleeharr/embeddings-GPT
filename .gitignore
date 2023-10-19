@@ -1,2 +1,4 @@
 element_data/*
 gnuradio_data/*
+.idea/
+*.json
