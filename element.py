@@ -2,7 +2,7 @@ import json
 import requests
 
 
-def load_config(filename="config.json"):
+def load_config(filename="credentials.json"):
     """Load the configuration from a JSON file."""
     with open(filename, "r") as file:
         return json.load(file)
@@ -66,7 +66,7 @@ def fetch_messages(homeserver_url, access_token, room_id):
             all_messages.extend(response_data["chunk"])
 
             # Save the current chunk to a file
-            with open(f"element_data/chunk_{chunk_counter}.json", "w") as chunk_file:
+            with open(f"element_data2/chunk_{chunk_counter}.json", "w") as chunk_file:
                 json.dump(response_data["chunk"], chunk_file)
 
             chunk_counter += 1
@@ -81,11 +81,11 @@ def fetch_messages(homeserver_url, access_token, room_id):
     return all_messages
 
 
-def main():
+def download_element_data():
     config = load_config()
-    HOMESERVER_URL = config["HOMESERVER_URL"]
-    USERNAME = config["USERNAME"]
-    PASSWORD = config["PASSWORD"]
+    HOMESERVER_URL = config["homeserver"]
+    USERNAME = config["user_id"]
+    PASSWORD = config["password"]
 
     access_token = authenticate(HOMESERVER_URL, USERNAME, PASSWORD)
     verify_authentication(HOMESERVER_URL, access_token, USERNAME)
@@ -99,4 +99,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    download_element_data()
