@@ -1,32 +1,47 @@
-from github import Github
+import pandas as pd
 import os
+import json
 
-# Authenticate with GitHub (replace with your token)
-g = Github("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")
+element_path = 'element_data'
+github_path = 'github_data'
+all_messages = []
 
+# Loop through each JSON file in the folder
+for filename in os.listdir(element_path):
+    if filename.endswith(".json"):
+        with open(os.path.join(element_path, filename), 'r') as f:
+            data = json.load(f)
 
-def clone_gnuradio_repo():
-    repo_url = "https://github.com/gnuradio/gnuradio.git"
-    dest_dir = "./gnuradio_data"
+        # Extract the messages
+        messages = [message['content']['body'] for message in data if
+                    'content' in message and 'body' in message['content']]
+        all_messages.extend(messages)
 
-    if not os.path.exists(dest_dir):
-        os.system(f"git clone {repo_url} {dest_dir}")
+# Convert list of messages to DataFrame
+df = pd.DataFrame(all_messages, columns=['message'])
 
-def convert_to_openai_embeddings(text):
-    # Use the OpenAI embeddings API here
-    return text
+# Save the DataFrame to CSV
+df.to_csv('element_data_messages.csv', index=False)
 
-# Replace 'openai' with the user or organization of interest
-for repo in g.get_user('openai').get_repos():
-    repo_name = repo.full_name
-    dest_dir = f"./github_data/{repo_name}"
-    clone_gnuradio_repo();
+repo_path = 'path_to_cloned_repo'  # Replace with the path to your cloned repo
 
-# Walk through the downloaded data and convert to embeddings
-for root, dirs, files in os.walk("./github_data"):
+all_files_content = []
+
+# Recursively list all files in the GitHub Repo
+for subdir, _, files in os.walk(repo_path):
     for file in files:
-        with open(os.path.join(root, file), 'r', errors='replace') as f:
-            data = f.read()
-            embedding = convert_to_openai_embeddings(data)
-            # Store the embedding or use it as needed
+        filepath = os.path.join(subdir, file)
 
+        # Read each file's content
+        try:
+            with open(filepath, 'r', encoding="UTF-8") as f:
+                content = f.read()
+            all_files_content.append((filepath, content))
+        except Exception as e:
+            print(f"Could not read file {filepath} due to {e}")
+
+# Convert list of file contents to DataFrame
+df_repo = pd.DataFrame(all_files_content, columns=['filename', 'content'])
+
+# Save the DataFrame to CSV
+df_repo.to_csv('github_repo_contents.csv', index=False)
