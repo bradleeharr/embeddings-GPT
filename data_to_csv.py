@@ -4,10 +4,10 @@ import json
 
 
 def remove_newlines(series):
-    series = series.str.replace('\n', ' ')
-    series = series.str.replace('\\n', ' ')
-    series = series.str.replace('  ', ' ')
-    series = series.str.replace('  ', ' ')
+    series = series.replace('\n', ' ')
+    series = series.replace('\\n', ' ')
+    series = series.replace('  ', ' ')
+    series = series.replace('  ', ' ')
     return series
 
 
@@ -28,7 +28,7 @@ def element_to_csv(element_path):
     df = pd.DataFrame(all_messages, columns=['message'])
 
     # Save the DataFrame to CSV
-    df.to_csv('element_data_messages.csv', index=False)
+    df.to_csv('processed/element_data_messages.csv', index=False)
 
 
 def github_to_csv(repo_path):
@@ -42,12 +42,12 @@ def github_to_csv(repo_path):
             try:
                 with open(filepath, 'r', encoding="UTF-8") as f:
                     content = f.read()
-                all_files_content.append((filepath, content))
+                all_files_content.append((filepath, remove_newlines(content)))
             except Exception as e:
                 print(f"Could not read file {filepath} due to {e}")
 
     # Convert list of file contents to DataFrame
-    df_repo = pd.DataFrame(all_files_content, columns=['filename', 'content'])
-
+    df_repo = pd.DataFrame(all_files_content, columns=['fname', 'text'])
+    df_repo['text'] = df_repo.fname + ". " + remove_newlines(df_repo.text)
     # Save the DataFrame to CSV
-    df_repo.to_csv('github_repo_contents.csv', index=False)
+    df_repo.to_csv('processed/github_repo_contents.csv', index=False)
