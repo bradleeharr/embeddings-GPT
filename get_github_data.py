@@ -2,7 +2,7 @@ from github import Github
 import os
 
 # Authenticate with GitHub (replace with your token)
-g = Github("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")
+g = Github("GITHUB_ACCESS_TOKEN")
 
 
 def clone_gnuradio_repo():
