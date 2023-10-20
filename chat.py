@@ -47,10 +47,10 @@ def handleMentions():
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=messagesOb
+        messages=messagesOb,
     )
-    print(response.choices[0].message.content)
-    messagesOb.append(response.choices[0].message.content)
+    print(response)
+    messagesOb.append(response)
 
 
 handleMentions()
