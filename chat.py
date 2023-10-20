@@ -13,12 +13,13 @@ datafile_path = "processed/embeddings.csv"
 
 # read the datafile
 df = pd.read_csv(datafile_path)
-print(df.head())
 df["embeddings"] = df.embeddings.apply(eval).apply(np.array)
+print("Loaded GitHub Embeddings")
 
 
 def search_justice(df, search, threshold=0.8):
     """ Search through the rows of data using embeddings """
+    print("Search: ", search)
     row_embedding = get_embedding(
         search,
         engine="text-embedding-ada-002"
@@ -39,7 +40,7 @@ def handleMentions():
     if results.empty:
         prompt = text
     else:
-        prompt = "Look through this information to answer the question: " + results[['combined']].head(5).to_string(
+        prompt = "Look through this information to answer the question: " + results[['text']].head(5).to_string(
             header=False,
             index=False).strip() + "(if it doesn't make sense you can disregard it). The question is: " + text
     messagesOb.append({"role": "user", "content": prompt})
