@@ -31,9 +31,7 @@ def search_justice(df, search, threshold=0.8):
     return highScores
 
 
-def handleMentions():
-    text = input('\r\n User: ')
-
+def handle_message(text):
     results = search_justice(df, text)
     print(results.head(5))
 
@@ -47,10 +45,13 @@ def handleMentions():
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=messagesOb,
+        messages=messagesOb
     )
     print(response)
-    messagesOb.append(response)
+    messagesOb.append(response.choices[0].message.content)
+    return response.choices[0].message.content
 
 
-handleMentions()
+if __name__ == "__main__":
+    text = input('\r\n User: ')
+    handle_message(text)
