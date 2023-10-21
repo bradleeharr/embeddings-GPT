@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from get_element_data import load_config
 from openai.embeddings_utils import cosine_similarity, get_embedding
+from flask_socketio import emit
 
 config = load_config("credentials.json")
 openai.api_key = config["openai-api-key"]
@@ -26,7 +27,6 @@ def search_justice(df, search, threshold=0.8):
     )
     df["similarity"] = df.embeddings.apply(lambda x: cosine_similarity(x, row_embedding))
     new = df.sort_values("similarity", ascending=False)
-    # only return the rows with a higher than threshold
     highScores = new[new['similarity'] >= threshold]
     return highScores
 
@@ -38,18 +38,20 @@ def handle_message(text):
     if results.empty:
         prompt = text
     else:
-        prompt = "Look through this information to answer the question: " + results[['text']].head(5).to_string(
+        prompt = "Look through this information to answer the question: " + results[['text']].head(15).to_string(
             header=False,
             index=False).strip() + "(if it doesn't make sense you can disregard it). The question is: " + text
     messagesOb.append({"role": "user", "content": prompt})
 
-    response = openai.ChatCompletion.create(
+    response_stream = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
-        messages=messagesOb
+        messages=messagesOb,
+        stream=True
     )
-    print(response)
-    messagesOb.append(response.choices[0].message.content)
-    return response.choices[0].message.content
+    for i, chunk in enumerate(response_stream):
+        emit('response', chunk.choices[0].delta.content)
+        messagesOb.append(chunk.choices[0].delta)
+        print(chunk)
 
 
 if __name__ == "__main__":

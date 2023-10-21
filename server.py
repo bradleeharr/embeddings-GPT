@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template
+from flask_socketio import SocketIO
 from chat import handle_message
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 
 @app.route('/')
@@ -9,13 +11,11 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/ask', methods=['POST'])
-def ask():
-    message = request.form['message']
-    # On message input, get response from chatbot
-    response = handle_message(message)
-    return jsonify({'response': response})
+@socketio.on('message')
+def handle_message_event(msg):
+    response = handle_message(msg)
+    socketio.emit('response', response)
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app, debug=True, allow_unsafe_werkzeug=True)

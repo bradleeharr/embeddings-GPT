@@ -6,7 +6,7 @@
     <title>GNU Radio Chatbot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
-
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 </head>
 <body>
 <div class="chat-container">
@@ -21,37 +21,27 @@
 </div>
 
 <script>
-        function sendMessage() {
-    let message = document.getElementById("userInput").value;
-    fetch('/ask', {
-        method: 'POST',
-        body: new URLSearchParams({ 'message': message }),
-    })
-    .then(response => response.json())
-    .then(data => {
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+    socket.on('response', function(msg) {
         let chatbox = document.getElementById("chatbox");
 
         // Use Showdown to convert the markdown response to HTML
         var converter = new showdown.Converter();
-        var botResponseHtml = converter.makeHtml(data.response);
+        var botResponseHtml = converter.makeHtml(msg);
 
         // Append messages to the chatbox
-        chatbox.innerHTML += "<div class='message user'>You: " + message + "</div>";
         chatbox.innerHTML += "<div class='message bot'>" + botResponseHtml + "</div>";
         chatbox.scrollTop = chatbox.scrollHeight; // auto scroll to bottom
-    })
-    .catch((error) => console.error('Error:', error));
+    });
 
-    document.getElementById("userInput").value = "";
-}
+   function sendMessage() {
+        let message = document.getElementById("userInput").value;
+        socket.send(message);
+        document.getElementById("userInput").value = "";
 
-
-
-
-
-
-
-
+        let chatbox = document.getElementById("chatbox");
+        chatbox.innerHTML += "<div class='message user'>You: " + message + "</div>";
+    }
 
 </script>
 </body>
