@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='processchat.js') }}"></script>
 </head>
 <body>
-<div class="chat-container">
+<div class=" chat-container
+    ">
     <div class="chat-header">
         GNU Radio Assistant
     </div>
@@ -19,30 +21,5 @@
         <button id="sendBtn" onclick="sendMessage()">Send</button>
     </div>
 </div>
-
-<script>
-    var socket = io.connect('http://' + document.domain + ':' + location.port);
-    socket.on('response', function(msg) {
-        let chatbox = document.getElementById("chatbox");
-
-        // Use Showdown to convert the markdown response to HTML
-        var converter = new showdown.Converter();
-        var botResponseHtml = converter.makeHtml(msg);
-
-        // Append messages to the chatbox
-        chatbox.innerHTML += "<div class='message bot'>" + botResponseHtml + "</div>";
-        chatbox.scrollTop = chatbox.scrollHeight; // auto scroll to bottom
-    });
-
-   function sendMessage() {
-        let message = document.getElementById("userInput").value;
-        socket.send(message);
-        document.getElementById("userInput").value = "";
-
-        let chatbox = document.getElementById("chatbox");
-        chatbox.innerHTML += "<div class='message user'>You: " + message + "</div>";
-    }
-
-</script>
 </body>
 </html>
