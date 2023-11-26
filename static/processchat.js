@@ -6,7 +6,7 @@ socket.on('response', function(msg) {
     console.log('response: ', msg)
     let chatbox = document.getElementById("chatbox");
     if (msg) collectedResponse += msg;
-
+r
     if (!receivingResponse && msg) {
         console.log("CreateDiv", msg)
         chatbox.innerHTML += "<div class='message bot'> " + collectedResponse;
@@ -42,10 +42,16 @@ function sendMessage() {
 }
 document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("userInput").addEventListener("keydown", function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            sendMessage();
-        }
+      if(e.keyCode === 13 && e.shiftKey) {
+        e.preventDefault();
+        // Insert a new line at the cursor position
+        this.value = this.value.substring(0, this.selectionStart) + "\n" + this.value.substring(this.selectionEnd);
+        // Update the cursor position
+        this.selectionStart = this.selectionEnd = this.selectionStart + 1;
+    } else if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+    }
     });
 });
 

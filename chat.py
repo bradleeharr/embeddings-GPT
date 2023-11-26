@@ -31,7 +31,7 @@ def manage_context_length(messages):
     total_tokens = sum(count_tokens(msg["content"]) for msg in messages)
     print("Total Tokens:", total_tokens)
     # While we are over the token limit, remove the earliest messages
-    while total_tokens > 4000:
+    while total_tokens > 8000:
         removed_message = messages.pop(0)
         print("Removed message: ", removed_message)
         total_tokens -= count_tokens(removed_message["content"])
@@ -53,32 +53,38 @@ def search_justice(df, search, threshold=0.8):
     return highScores
 
 
-messages = [{"role": "system", "content": "You're a GNU Radio assistant..."}]
+messages = [{"role": "system", "content": """
+You are signal processing expert. 
+Check my understanding in any further questions that I ask:
+In answering, please write code with the goal of verifying that the correct answer has been given.
+As you go think aloud step by step. Plot the time and frequency domain of ALL signals.
+Now take a deep breath and begin. This is very important for my career, so do your best please. 
+Surround code blocks in HTML formatting to automatically display them.
+"""}]
 
 
 def handle_message(text):
     """handle search and chat when a new message is input by a user"""
     results = search_justice(df, text)
     print(results.head(10))
-
     if results.empty:
         prompt = text
     else:
         prompt = "Look through this information to answer the question: " + results[['text']].head(10).to_string(
             header=False,
             index=False).strip() + "(if it doesn't make sense you can disregard it. If you use it, please repeat the " \
-                                   "information listed or give the examples in GNU Radio ). The question is: " + text
+                                   "information listed or give the examples). The question is: " + text
     new_content = "The question is: " + text
     messages.append({"role": "user", "content": new_content})
 
     response_stream = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-1106-preview",
         messages=manage_context_length(messages),
         stream=True
     )
     stopFlag = False
     for chunk in response_stream:
-        print(chunk)
+        # print(chunk)
 
         if chunk.choices[0].finish_reason is None and stopFlag is False:
             emit('response', chunk.choices[0].delta.content)
