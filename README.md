@@ -1,6 +1,6 @@
-# GNU Radio Documentation Embeddings
+# GPT Documentation Embeddings
 
-This project focuses on processing the GNU Radio's associated GitHub source code to generate embeddings. These embeddings aim to allow efficient and relevant searches, aiding in providing context for chat-based interactions.
+This project focuses on processing another project's associated GitHub source code to generate embeddings. These embeddings aim to allow efficient and relevant searches, aiding in providing context for chat-based interactions.
 
 ## Repository Contents
 
@@ -9,13 +9,13 @@ This project focuses on processing the GNU Radio's associated GitHub source code
 - `chat.py`: Script to interact with the chat interface.
 - `data_to_csv.py`: Script to convert scraped data to CSV format.
 - `generate_embeddings.py`: Script to process the data and create embeddings.
-- `get_element_data.py`: Script to scrape and process GNU Radio documentation.
-- `get_github_data.py`: Script to scrape and process GNU Radio GitHub source code.
+- `get_element_data.py`: Script to scrape and process documentation.
+- `get_github_data.py`: Script to scrape and process GitHub source code.
 
 ## Overview
 
 1. **Data Collection**: 
-   - The project first clones the GNU Radio GitHub and stores it in a structured manner.
+   - The project first clones the chosen GitHub and stores it in a structured manner.
    
 2. **Data Processing**:
    - Data is cleaned and converted to a CSV format.
