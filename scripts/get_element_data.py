@@ -91,7 +91,7 @@ def download_element_data():
     access_token = authenticate(HOMESERVER_URL, USERNAME, PASSWORD)
     verify_authentication(HOMESERVER_URL, access_token, USERNAME)
 
-    ROOM_ID =  # "ROOMID" """PLACEHOLDER"""
+    ROOM_ID =  "ROOMID" """PLACEHOLDER"""
     all_messages = fetch_messages(HOMESERVER_URL, access_token, ROOM_ID)
 
     # Printing the last 10 messages as an example

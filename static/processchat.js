@@ -6,7 +6,6 @@ socket.on('response', function(msg) {
     console.log('response: ', msg)
     let chatbox = document.getElementById("chatbox");
     if (msg) collectedResponse += msg;
-r
     if (!receivingResponse && msg) {
         console.log("CreateDiv", msg)
         chatbox.innerHTML += "<div class='message bot'> " + collectedResponse;

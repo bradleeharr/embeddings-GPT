@@ -4,18 +4,18 @@ import pandas as pd
 import tiktoken
 import time
 
-from get_element_data import load_config
-from openai.embeddings_utils import cosine_similarity, get_embedding
+from scripts.get_element_data import load_config
+#from openai.embeddings_utils import cosine_similarity, get_embedding
 from flask_socketio import emit
 
 config = load_config("credentials.json")
 openai.api_key = config["openai-api-key"]
 
 # read the datafile
-datafile_path = "processed/embeddings.csv"
-df = pd.read_csv(datafile_path)
-df["embeddings"] = df.embeddings.apply(eval).apply(np.array)
-print("Loaded GitHub Embeddings")
+#datafile_path = "processed/embeddings.csv"
+#df = pd.read_csv(datafile_path)
+#df["embeddings"] = df.embeddings.apply(eval).apply(np.array)
+#print("Loaded GitHub Embeddings")
 
 
 def count_tokens(text):
@@ -39,9 +39,9 @@ def manage_context_length(messages):
 
     return messages
 
-
+"""
 def search_justice(df, search, threshold=0.8):
-    """ Search through the rows of data using embeddings """
+    Search through the rows of data using embeddings 
     print("Search: ", search)
     row_embedding = get_embedding(
         search,
@@ -51,23 +51,23 @@ def search_justice(df, search, threshold=0.8):
     new = df.sort_values("similarity", ascending=False)
     highScores = new[new['similarity'] >= threshold]
     return highScores
-
+"""
 
 messages = [{"role": "system", "content": """
 You are signal processing expert. 
 Check my understanding in any further questions that I ask:
 In answering, please write code with the goal of verifying that the correct answer has been given.
 As you go think aloud step by step. Plot the time and frequency domain of ALL signals.
-Now take a deep breath and begin. This is very important for my career, so do your best please. 
+Now take a deep breath and begin. 
 Surround code blocks in HTML formatting to automatically display them.
 """}]
 
 
 def handle_message(text):
     """handle search and chat when a new message is input by a user"""
-    results = search_justice(df, text)
-    print(results.head(10))
-    if results.empty:
+    #results = search_justice(df, text)
+    #print(results.head(10))
+    if True:
         prompt = text
     else:
         prompt = "Look through this information to answer the question: " + results[['text']].head(10).to_string(
